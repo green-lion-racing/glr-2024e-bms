@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "uartDMA.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
