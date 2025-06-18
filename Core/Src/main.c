@@ -512,8 +512,32 @@ void Error_Handler(void)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
+
+  // If error occurs
+  // Flash LD2 which is on same pin as SPI1_SCK
+  // Thus reconfigure pin as SPI1 in fault state not needed
+
+  // Deinit SPI1 to reclaim PA5
+  HAL_SPI_DeInit(&hspi1);
+
+  // Reconfigure PA5 as GPIO output
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  GPIO_InitStruct.Pin = GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
   while (1)
   {
+    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+
+    // Crude software delay loop (~250ms depending on clock)
+    // Since __disable_irq() disables HAL_Delay()
+    for (int delay = 0; delay < 500000; delay++)
+      __NOP();
   }
   /* USER CODE END Error_Handler_Debug */
 }
