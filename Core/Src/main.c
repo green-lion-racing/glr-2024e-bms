@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "uartDMA.h"
+#include "adBms_Application.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -111,7 +112,9 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
-
+  // Set MSTR pin high to enable 6822 in master mode
+  HAL_GPIO_WritePin(SPI1_MSTR_GPIO_Port, SPI1_MSTR_Pin, GPIO_PIN_SET);
+  adbms_main();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -456,16 +459,26 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(SPI1_MSTR_GPIO_Port, SPI1_MSTR_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(BMS_FAULT_GPIO_Port, BMS_FAULT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(BMS_CS_GPIO_Port, BMS_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PUSH_BUTTON_Pin */
   GPIO_InitStruct.Pin = PUSH_BUTTON_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(PUSH_BUTTON_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SPI1_MSTR_Pin */
+  GPIO_InitStruct.Pin = SPI1_MSTR_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(SPI1_MSTR_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BMS_FAULT_Pin */
   GPIO_InitStruct.Pin = BMS_FAULT_Pin;
@@ -474,12 +487,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(BMS_FAULT_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : BMS_CS_Pin */
-  GPIO_InitStruct.Pin = BMS_CS_Pin;
+  /*Configure GPIO pin : SPI1_CS_Pin */
+  GPIO_InitStruct.Pin = SPI1_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(BMS_CS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(SPI1_CS_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
